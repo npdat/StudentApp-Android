@@ -52,7 +52,7 @@ public class ActivityLogin extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 progressDialog.show();
-                Login();
+                Login(editemail.getText().toString(),editpassword.getText().toString());
 
             }
         });
@@ -64,34 +64,38 @@ public class ActivityLogin extends AppCompatActivity {
             }
         });
     }
-    public void Login(){
+    public int Login(String email,String pass){
         members=tableMember.getListMember();
-        if(editemail.getText().toString().equals("")||editpassword.getText().toString().equals("")) {
+        if(email.toString().equals("")||pass.toString().equals("")) {
             progressDialog.dismiss();
             Toast.makeText(ActivityLogin.this,"Khong duoc bo trong",Toast.LENGTH_SHORT).show();
+            return 1;
         }
-        if(!isEmailValid(editemail.getText().toString())) {
+        if(!isEmailValid(email.toString())) {
             progressDialog.dismiss();
             Toast.makeText(ActivityLogin.this,"Email khong dung dinh dang",Toast.LENGTH_SHORT).show();
+            return 2;
         }
         for (int i=members.size()-1;i>=0;i--){
-            if(editemail.getText().toString().equals(members.get(i).getEmail().toString())
-                    &&editpassword.getText().toString().equals(members.get(i).getPassword().toString())){
+            if(email.toString().equals(members.get(i).getEmail().toString())
+                    &&pass.toString().equals(members.get(i).getPassword().toString())){
                 Toast.makeText(ActivityLogin.this,"Dang nhap thanh cong",Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
                 Intent intent = new Intent(ActivityLogin.this,Activitymain.class);
                 startActivity(intent);
-                break;
+                return 3;
             }
             if(i==0){
-                if(!editemail.getText().toString().equals(members.get(i).getEmail().toString())
-                        ||!editpassword.getText().toString().equals(members.get(i).getPassword().toString())){
+                if(!email.toString().equals(members.get(i).getEmail().toString())
+                        ||!pass.toString().equals(members.get(i).getPassword().toString())){
                     Toast.makeText(ActivityLogin.this,"Email hoac mat khau sai",Toast.LENGTH_SHORT).show();
                     editemail.setFocusable(true);
                     progressDialog.dismiss();
+                    return 4;
                 }
 
             }
         }
+        return 5;
     }
 }

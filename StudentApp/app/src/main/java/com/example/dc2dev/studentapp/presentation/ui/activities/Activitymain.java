@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.dc2dev.studentapp.R;
 import com.example.dc2dev.studentapp.data.clients.database.TableStudent;
@@ -60,6 +61,18 @@ public class Activitymain extends AppCompatActivity {
                 intent.putExtra("img",students.get(position).getImage());
                 intent.putExtra("id",students.get(position).getId());
                 startActivityForResult(intent,KEYUPDATE);
+            }
+        });
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                int idst=students.get(position).getId();
+                tableStudent.delete(idst+"");
+                students=tableStudent.getListStudent();
+                studentAdapter=new StudentAdapter(Activitymain.this,students);
+                listView.setAdapter(studentAdapter);
+                Toast.makeText(Activitymain.this,"Xoa thanh cong",Toast.LENGTH_SHORT).show();
+                return true;
             }
         });
     }
