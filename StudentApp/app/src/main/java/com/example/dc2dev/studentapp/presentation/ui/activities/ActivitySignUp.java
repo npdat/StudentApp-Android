@@ -11,7 +11,6 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.example.dc2dev.studentapp.R;
-import com.example.dc2dev.studentapp.data.clients.api.MySQLiteOpenHelper;
 import com.example.dc2dev.studentapp.data.clients.database.TableMember;
 import com.example.dc2dev.studentapp.domain.entities.Member;
 
@@ -27,7 +26,6 @@ public class ActivitySignUp extends AppCompatActivity {
     Button btnsignup;
     RadioButton cbmale,cbfemale;
     TableMember tableMember;
-    MySQLiteOpenHelper mySQLiteOpenHelper;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,8 +36,6 @@ public class ActivitySignUp extends AppCompatActivity {
         Listener();
     }
     public void Init(){
-        mySQLiteOpenHelper=new MySQLiteOpenHelper(ActivitySignUp.this);
-        mySQLiteOpenHelper.insertdata(ActivitySignUp.this);
         editname= (EditText) findViewById(R.id.txtfullnamer);
         editemail= (EditText) findViewById(R.id.txtemailr);
         editpass= (EditText) findViewById(R.id.txtpasswordr);

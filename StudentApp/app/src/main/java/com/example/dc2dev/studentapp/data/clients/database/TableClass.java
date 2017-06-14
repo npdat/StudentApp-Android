@@ -21,7 +21,9 @@ public class TableClass {
     public static final String COT_TEN = "classname";
     public static final String TAO_BANG = "create table " + TEN_BANG
             + " ( " + COT_MA + " integer primary key autoincrement, " + COT_TEN + " text);";
-
+    public static final String TAO_DATA1="INSERT INTO "+ TEN_BANG +"("+COT_MA+","+COT_TEN+") VALUES ("+0+",'Lop 1')";
+    public static final String TAO_DATA2="INSERT INTO "+ TEN_BANG +"("+COT_MA+","+COT_TEN+") VALUES ("+1+",'Lop 2')";
+    public static final String TAO_DATA3="INSERT INTO "+ TEN_BANG +"("+COT_MA+","+COT_TEN+") VALUES ("+2+",'Lop 3')";
     public TableClass(Context context) {
         database = new MySQLiteOpenHelper(context).getWritableDatabase();
 
