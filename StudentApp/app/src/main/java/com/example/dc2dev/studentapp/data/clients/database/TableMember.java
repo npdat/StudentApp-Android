@@ -69,5 +69,15 @@ public class TableMember {
         return members;
     }
 
+    public boolean isExist(String email, String password) {
+        String query = "SELECT * FROM Member WHERE email = '" + email + "' AND pass = '" + password + "'";
+        Cursor cursor = database.rawQuery(query, null);
+        if (cursor.getCount() != 0) {
+            cursor.close();
+            return true;
+        }
+
+        return false;
+    }
 }
 

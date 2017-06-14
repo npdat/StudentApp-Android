@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">StudentApp</string>
+    <string name="email_empty">Email khong duoc trong</string>
+    <string name="email_invalid">Email khong hop le!</string>
+    <string name="login_sucess">Dang nhap thanh cong</string>
+    <string name="login_fail">Email hoac mat khau sai</string>
 </resources>

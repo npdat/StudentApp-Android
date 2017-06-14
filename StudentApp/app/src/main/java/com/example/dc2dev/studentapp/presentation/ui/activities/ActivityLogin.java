@@ -12,7 +12,10 @@ import android.widget.Toast;
 
 import com.example.dc2dev.studentapp.R;
 import com.example.dc2dev.studentapp.data.clients.database.TableMember;
+import com.example.dc2dev.studentapp.data.clients.service.MemberDataService;
 import com.example.dc2dev.studentapp.domain.entities.Member;
+import com.example.dc2dev.studentapp.presentation.ui.presenters.LoginPresenter;
+import com.example.dc2dev.studentapp.presentation.ui.views.LoginView;
 
 import java.util.List;
 
@@ -22,12 +25,13 @@ import static com.example.dc2dev.studentapp.domain.entities.Member.isEmailValid;
  * Created by dc2dev on 6/9/17.
  */
 
-public class ActivityLogin extends AppCompatActivity {
+public class ActivityLogin extends AppCompatActivity implements LoginView {
     EditText editemail,editpassword;
     Button btnlogin,btnsu;
     TableMember tableMember;
     List<Member> members;
     ProgressDialog progressDialog;
+    LoginPresenter presenter;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +47,7 @@ public class ActivityLogin extends AppCompatActivity {
         btnlogin= (Button) findViewById(R.id.btnlogin);
         tableMember=new TableMember(ActivityLogin.this);
        //tableMember.create(new Member("minh","minh","123",0));
+        presenter = new LoginPresenter(this, new MemberDataService(ActivityLogin.this));
 
         progressDialog=new ProgressDialog(ActivityLogin.this);
         progressDialog.setMessage("Xin Vui Long Cho...");
@@ -51,8 +56,9 @@ public class ActivityLogin extends AppCompatActivity {
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressDialog.show();
-                Login(editemail.getText().toString(),editpassword.getText().toString());
+                //progressDialog.show();
+                //Login(editemail.getText().toString(),editpassword.getText().toString());
+                presenter.onLoginClicked();
 
             }
         });
@@ -97,5 +103,32 @@ public class ActivityLogin extends AppCompatActivity {
             }
         }
         return 5;
+    }
+
+    @Override
+    public String getEmail() {
+        return editemail.getText().toString();
+    }
+
+    @Override
+    public String getPassword() {
+        return editpassword.getText().toString();
+    }
+
+    @Override
+    public void showEmailError(int resId) {
+        Toast.makeText(ActivityLogin.this,getString(resId),Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void navigationToHome() {
+        Toast.makeText(ActivityLogin.this, getString(R.string.login_sucess),Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(ActivityLogin.this, Activitymain.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void loginFail() {
+        Toast.makeText(ActivityLogin.this,getString(R.string.login_fail),Toast.LENGTH_SHORT).show();
     }
 }
