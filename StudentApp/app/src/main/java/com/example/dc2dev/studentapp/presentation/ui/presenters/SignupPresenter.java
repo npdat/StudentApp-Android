@@ -29,23 +29,23 @@ public class SignupPresenter {
         int gender=view.getCbgender();
 
         if (!isFullNameValid(fullname)) {
-            view.showEmailError(R.string.fullname_invalid);
+            view.showError(R.string.fullname_invalid);
             return;
         }
         else if (!isEmailValid(email.toString())) {
-            view.showEmailError(R.string.email_invalid);
+            view.showError(R.string.email_invalid);
             return;
         }
         else if (password.isEmpty()){
-            view.showEmailError(R.string.password_empty);
+            view.showError(R.string.password_empty);
             return;
         }
         else if (cfpassword.isEmpty()){
-            view.showEmailError(R.string.cfpassword_empty);
+            view.showError(R.string.cfpassword_empty);
             return;
         }
         else if (isConfirmPassword(password,cfpassword)){
-            view.showEmailError(R.string.cfpassword_invalid);
+            view.showError(R.string.cfpassword_invalid);
             return;
         }
 

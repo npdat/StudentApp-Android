@@ -11,5 +11,5 @@ public interface SignupView {
     String getCfPassword();
     int getCbgender();
     void navigationTolistst();
-    void showEmailError(int resId);
+    void showError(int resId);
 }

@@ -16,7 +16,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.dc2dev.studentapp.R;
-import com.example.dc2dev.studentapp.data.clients.database.TableStudent;
 import com.example.dc2dev.studentapp.data.clients.service.StudentDataService;
 import com.example.dc2dev.studentapp.domain.entities.Student;
 import com.example.dc2dev.studentapp.presentation.ui.adapters.StudentAdapter;
@@ -35,7 +34,6 @@ public class Activitymain extends AppCompatActivity implements MainView{
     FloatingActionButton floatingActionButton;
     StudentAdapter studentAdapter;
     ArrayList<Student> students,studentssearch;
-    TableStudent tableStudent;
     MainPresenter presenter;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,11 +45,10 @@ public class Activitymain extends AppCompatActivity implements MainView{
     public void Init(){
         listView= (ListView) findViewById(R.id.listsd);
         floatingActionButton= (FloatingActionButton) findViewById(R.id.btnfloat);
-        tableStudent=new TableStudent(Activitymain.this);
         students=new ArrayList<>();
         studentssearch=new ArrayList<>();
         presenter=new MainPresenter(Activitymain.this,new StudentDataService(Activitymain.this));
-        students=tableStudent.getListStudent();
+        students=presenter.onGetList();
         studentAdapter=new StudentAdapter(Activitymain.this,students);
         listView.setAdapter(studentAdapter);
     }
@@ -65,12 +62,7 @@ public class Activitymain extends AppCompatActivity implements MainView{
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent=new Intent(Activitymain.this,ActivityUpdateStudent.class);
-                intent.putExtra("name",students.get(position).getFullname());
-                intent.putExtra("class",students.get(position).getClassname());
-                intent.putExtra("img",students.get(position).getImage());
-                intent.putExtra("id",students.get(position).getId());
-                startActivityForResult(intent,KEYUPDATE);
+                presenter.oUpdateClicked(position);
             }
         });
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -86,7 +78,7 @@ public class Activitymain extends AppCompatActivity implements MainView{
     @Override
     protected void onResume() {
         students=new ArrayList<>();
-        students=tableStudent.getListStudent();
+        students=presenter.onGetList();
         studentAdapter=new StudentAdapter(Activitymain.this,students);
         listView.setAdapter(studentAdapter);
         super.onResume();
@@ -95,7 +87,7 @@ public class Activitymain extends AppCompatActivity implements MainView{
     @Override
     protected void onRestart() {
         students=new ArrayList<>();
-        students=tableStudent.getListStudent();
+        students=presenter.onGetList();
         studentAdapter=new StudentAdapter(Activitymain.this,students);
         listView.setAdapter(studentAdapter);
         super.onRestart();
@@ -143,23 +135,23 @@ public class Activitymain extends AppCompatActivity implements MainView{
     }
 
     @Override
-    public void intenttoupdatest() {
-
+    public void intenttoupdatest(int pos) {
+        Intent intent=new Intent(Activitymain.this,ActivityUpdateStudent.class);
+        intent.putExtra("name",students.get(pos).getFullname());
+        intent.putExtra("class",students.get(pos).getClassname());
+        intent.putExtra("img",students.get(pos).getImage());
+        intent.putExtra("id",students.get(pos).getId());
+        startActivityForResult(intent,KEYUPDATE);
     }
 
     @Override
     public void deleteclicked(String id) {
-//        create
-//                update
-//        delete
-//                getlist
-//        search
-
-//con lam hien ra lai listview
-//        tableStudent.delete(id);
-//        students=tableStudent.getListStudent();
+        students=new ArrayList<>();
+        students=presenter.onGetList();
         studentAdapter=new StudentAdapter(Activitymain.this,students);
         listView.setAdapter(studentAdapter);
         Toast.makeText(Activitymain.this,"Xoa thanh cong",Toast.LENGTH_SHORT).show();
     }
+
+
 }

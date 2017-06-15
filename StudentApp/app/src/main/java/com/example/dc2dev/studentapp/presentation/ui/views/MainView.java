@@ -6,7 +6,7 @@ package com.example.dc2dev.studentapp.presentation.ui.views;
 
 public interface MainView {
     void intenttocreatest();
-    void intenttoupdatest();
+    void intenttoupdatest(int pos);
     void deleteclicked(String pos);
-    //void showEmailError(int resId);
+
 }

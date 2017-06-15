@@ -30,26 +30,27 @@ public class TableStudent{
 
         }
 
-        public long create(Student st) {
+        public boolean create(Student st) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(COT_TEN, st.getFullname());
             contentValues.put(COT_LOP, st.getClassname());
             contentValues.put(COT_HINH, st.getImage());
-            return database.insert(TEN_BANG, null, contentValues);
+            database.insert(TEN_BANG, null, contentValues);
+            return true;
         }
 
         public boolean delete(String id) {
             database.delete(TEN_BANG, COT_MA + " = " + id, null);
             return true;
-// return database.delete(TEN_BANG, "id = ?", new String[] {ma});
         }
 
-        public long update(Student st) {
+        public boolean update(Student st) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(COT_TEN, st.getFullname());
             contentValues.put(COT_LOP, st.getClassname());
             contentValues.put(COT_HINH, st.getImage());
-            return database.update(TEN_BANG, contentValues, COT_MA + " = " + st.getId(), null);
+            database.update(TEN_BANG, contentValues, COT_MA + " = " + st.getId(), null);
+            return true;
         }
 
         public ArrayList<Student> getListStudent() {

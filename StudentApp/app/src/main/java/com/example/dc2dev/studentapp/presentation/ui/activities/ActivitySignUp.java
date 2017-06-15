@@ -87,7 +87,7 @@ public class ActivitySignUp extends AppCompatActivity implements SignupView{
     }
 
     @Override
-    public void showEmailError(int resId) {
+    public void showError(int resId) {
         Toast.makeText(ActivitySignUp.this,getString(resId),Toast.LENGTH_SHORT).show();
     }
 }

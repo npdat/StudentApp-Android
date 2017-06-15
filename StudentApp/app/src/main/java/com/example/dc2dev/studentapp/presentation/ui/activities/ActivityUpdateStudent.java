@@ -19,15 +19,16 @@ import android.widget.Toast;
 
 import com.example.dc2dev.studentapp.R;
 import com.example.dc2dev.studentapp.data.clients.api.BitmapByte;
-import com.example.dc2dev.studentapp.data.clients.database.TableClass;
-import com.example.dc2dev.studentapp.data.clients.database.TableStudent;
+import com.example.dc2dev.studentapp.data.clients.service.ClassDataService;
+import com.example.dc2dev.studentapp.data.clients.service.StudentDataService;
 import com.example.dc2dev.studentapp.domain.entities.Class;
-import com.example.dc2dev.studentapp.domain.entities.Student;
+import com.example.dc2dev.studentapp.presentation.ui.presenters.UpdateStPresenter;
+import com.example.dc2dev.studentapp.presentation.ui.views.UpdateStView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActivityUpdateStudent extends AppCompatActivity {
+public class ActivityUpdateStudent extends AppCompatActivity implements UpdateStView{
     EditText txtnameu;
     Spinner spinclassu;
     Button btnupdate;
@@ -38,9 +39,8 @@ public class ActivityUpdateStudent extends AppCompatActivity {
     Uri uriu=null;
     List<String> classadap;
     ArrayList<Class> classs;
-    TableClass tableClass;
-    TableStudent tableStudent;
     private final int SELECT_PHOTO=1;
+    UpdateStPresenter presenter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,14 +54,10 @@ public class ActivityUpdateStudent extends AppCompatActivity {
         imgchooseu= (ImageView) findViewById(R.id.imgchooseu);
         btnupdate= (Button) findViewById(R.id.btnupdate);
         classadap=new ArrayList<>();
-        intent=getIntent();
-        id=intent.getIntExtra("id",0);
-        classit=intent.getStringExtra("class");
-        imgit=intent.getStringExtra("img");
-        txtnameu.setText(intent.getStringExtra("name"));
-        tableStudent=new TableStudent(ActivityUpdateStudent.this);
-        tableClass=new TableClass(ActivityUpdateStudent.this);
-        classs=tableClass.getListClass();
+        presenter=new UpdateStPresenter(ActivityUpdateStudent.this,new StudentDataService(ActivityUpdateStudent.this),
+                new ClassDataService(ActivityUpdateStudent.this));
+        presenter.getDataIntent();
+        classs=presenter.onGetList();
         classadap=new ArrayList<>();
         for(Class c :classs){
             classadap.add(c.getName());
@@ -87,17 +83,7 @@ public class ActivityUpdateStudent extends AppCompatActivity {
         spinclassu.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                switch (position){
-                    case 0:
-                        classchoose=classs.get(position).getName();
-                        break;
-                    case 1:
-                        classchoose=classs.get(position).getName();
-                        break;
-                    case 2:
-                        classchoose=classs.get(position).getName();
-                        break;
-                }
+                presenter.getClasschoose(position);
             }
 
             @Override
@@ -108,41 +94,13 @@ public class ActivityUpdateStudent extends AppCompatActivity {
        imgchooseu.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               Intent intent;
-               if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-                   intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                   intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                   intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-               }else{
-                   intent = new Intent(Intent.ACTION_GET_CONTENT);
-               }
-               intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-               intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-               intent.setType("image/*");
-               startActivityForResult(intent, SELECT_PHOTO);
+            presenter.GetImage();
            }
        });
         btnupdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!txtnameu.getText().toString().equals("")){
-                    if(uriu==null){
-                        Student student=new Student(id,txtnameu.getText().toString(),classchoose,imgit);
-                        tableStudent.update(student);
-                        Toast.makeText(ActivityUpdateStudent.this,"Cap nhat thanh cong ",Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                    else {
-                        Student student=new Student(id,txtnameu.getText().toString(),classchoose,uriu.toString());
-                        tableStudent.update(student);
-                        Toast.makeText(ActivityUpdateStudent.this,"Cap nhat thanh cong ",Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-
-                }
-                else {
-                    Toast.makeText(ActivityUpdateStudent.this,"Ban cua nhap ten",Toast.LENGTH_SHORT).show();
-                }
+                presenter.isUpdateClicked();
             }
         });
     }
@@ -161,4 +119,84 @@ public class ActivityUpdateStudent extends AppCompatActivity {
             imgchooseu.setImageBitmap(bmp);
         }
     }
+
+    @Override
+    public int getid() {
+        return id;
+    }
+
+    @Override
+    public String getFullName() {
+        return txtnameu.getText().toString();
+    }
+
+    @Override
+    public String getClas() {
+        return classchoose;
+    }
+
+    @Override
+    public String getImg() {
+        if(uriu==null)
+            return null;
+        else
+            return uriu.toString();
+    }
+
+    @Override
+    public String getImgNull() {
+        return imgit;
+    }
+
+    @Override
+    public void getImage() {
+        Intent intent;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        }else{
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+        }
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.setType("image/*");
+        startActivityForResult(intent, SELECT_PHOTO);
+    }
+
+    @Override
+    public void getchooseclass(int pos) {
+        switch (pos){
+            case 0:
+                classchoose=classs.get(pos).getName();
+                break;
+            case 1:
+                classchoose=classs.get(pos).getName();
+                break;
+            case 2:
+                classchoose=classs.get(pos).getName();
+                break;
+        }
+    }
+
+    @Override
+    public void getData() {
+        intent=getIntent();
+        id=intent.getIntExtra("id",0);
+        classit=intent.getStringExtra("class");
+        imgit=intent.getStringExtra("img");
+        txtnameu.setText(intent.getStringExtra("name"));
+    }
+
+    @Override
+    public void showError(int resId) {
+        Toast.makeText(ActivityUpdateStudent.this,getString(resId),Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void updatesusscess() {
+        Toast.makeText(ActivityUpdateStudent.this,"Cap nhat thanh cong ",Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
 }

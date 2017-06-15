@@ -20,10 +20,11 @@ import android.widget.Toast;
 
 import com.example.dc2dev.studentapp.R;
 import com.example.dc2dev.studentapp.data.clients.api.BitmapByte;
-import com.example.dc2dev.studentapp.data.clients.database.TableClass;
-import com.example.dc2dev.studentapp.data.clients.database.TableStudent;
+import com.example.dc2dev.studentapp.data.clients.service.ClassDataService;
+import com.example.dc2dev.studentapp.data.clients.service.StudentDataService;
 import com.example.dc2dev.studentapp.domain.entities.Class;
-import com.example.dc2dev.studentapp.domain.entities.Student;
+import com.example.dc2dev.studentapp.presentation.ui.presenters.CreateStPresenter;
+import com.example.dc2dev.studentapp.presentation.ui.views.CreateStView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,20 +33,18 @@ import java.util.List;
  * Created by dc2dev on 6/9/17.
  */
 
-public class ActivityCreateStudent extends AppCompatActivity{
+public class ActivityCreateStudent extends AppCompatActivity implements CreateStView{
 
     ImageView img;
     EditText txtnamec;
     Spinner spinnerc;
     Button btnc;
-    TableClass tableClass;
-    TableStudent tableStudent;
     ArrayList<Class> classs;
     String classchoose;
-    Spinner imgchoose;
     List<String> classadap;
     Uri uric;
     String picturePath;
+    CreateStPresenter presenter;
     private final int SELECT_PHOTO=1;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,9 +58,9 @@ public class ActivityCreateStudent extends AppCompatActivity{
         txtnamec= (EditText) findViewById(R.id.txtnamec);
         spinnerc= (Spinner) findViewById(R.id.spinclassc);
         btnc= (Button) findViewById(R.id.btncreate);
-        tableStudent=new TableStudent(ActivityCreateStudent.this);
-        tableClass=new TableClass(ActivityCreateStudent.this);
-        classs=tableClass.getListClass();
+        presenter=new CreateStPresenter(ActivityCreateStudent.this,new StudentDataService(ActivityCreateStudent.this),
+                new ClassDataService(ActivityCreateStudent.this));
+        classs=presenter.onGetList();
         classadap=new ArrayList<>();
         for(Class c :classs){
             classadap.add(c.getName());
@@ -73,32 +72,13 @@ public class ActivityCreateStudent extends AppCompatActivity{
         btnc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!txtnamec.getText().toString().equals("")&&!uric.toString().equals("")){
-                    tableStudent.create(new Student(txtnamec.getText().toString(),classchoose,uric.toString()));
-                    Toast.makeText(ActivityCreateStudent.this,"Them thanh cong",Toast.LENGTH_SHORT).show();
-                    Intent intent=new Intent(ActivityCreateStudent.this,Activitymain.class);
-                    startActivity(intent);
-                }
-                else {
-                    Toast.makeText(ActivityCreateStudent.this,"Ban chua nhap ten",Toast.LENGTH_SHORT).show();
-                }
-
+            presenter.isCreateClicked();
             }
         });
         spinnerc.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                switch (position){
-                    case 0:
-                        classchoose=classs.get(position).getName();
-                        break;
-                    case 1:
-                        classchoose=classs.get(position).getName();
-                        break;
-                    case 2:
-                        classchoose=classs.get(position).getName();
-                        break;
-                }
+               presenter.getClasschoose(position);
             }
 
             @Override
@@ -109,22 +89,7 @@ public class ActivityCreateStudent extends AppCompatActivity{
         img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent =new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//                intent.setType("image/*");
-//                startActivityForResult(intent,SELECT_PHOTO);
-
-                Intent intent;
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-                    intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                    intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-                }else{
-                    intent = new Intent(Intent.ACTION_GET_CONTENT);
-                }
-                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.setType("image/*");
-                startActivityForResult(intent, SELECT_PHOTO);
+              presenter.GetImage();
             }
         });
     }
@@ -145,5 +110,61 @@ public class ActivityCreateStudent extends AppCompatActivity{
         }
     }
 
+
+    @Override
+    public String getFullName() {
+        return txtnamec.getText().toString();
+    }
+
+    @Override
+    public String getClas() {
+        return classchoose ;
+    }
+
+    @Override
+    public String getImg() {
+        return uric.toString();
+    }
+
+    @Override
+    public void getImage() {
+        Intent intent;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        }else{
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+        }
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.setType("image/*");
+        startActivityForResult(intent, SELECT_PHOTO);
+    }
+
+    @Override
+    public void getchooseclass(int pos) {
+        switch (pos){
+            case 0:
+                classchoose=classs.get(pos).getName();
+                break;
+            case 1:
+                classchoose=classs.get(pos).getName();
+                break;
+            case 2:
+                classchoose=classs.get(pos).getName();
+                break;
+        }
+    }
+    @Override
+    public void showError(int resId) {
+        Toast.makeText(ActivityCreateStudent.this,getString(resId),Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void backhome() {
+        Toast.makeText(ActivityCreateStudent.this,"Them thanh cong",Toast.LENGTH_SHORT).show();
+        finish();
+    }
 
 }

@@ -1,7 +1,10 @@
 package com.example.dc2dev.studentapp.presentation.ui.presenters;
 
+import com.example.dc2dev.studentapp.domain.entities.Student;
 import com.example.dc2dev.studentapp.domain.entities.service.StudentService;
 import com.example.dc2dev.studentapp.presentation.ui.views.MainView;
+
+import java.util.ArrayList;
 
 /**
  * Created by dc2dev on 6/15/17.
@@ -15,37 +18,17 @@ public class MainPresenter {
         this.view = view;
         this.service = service;
     }
-//    public void onLoginClicked() {
-//        String email = view.getEmail();
-//        String password = view.getPassword();
-//
-//
-//        if (email.isEmpty()) {
-//            view.showEmailError(R.string.email_empty);
-//            return;
-//        } else if (!isEmailValid(email.toString())) {
-//            view.showEmailError(R.string.email_invalid);
-//            return;
-//        }
-//        else if (password.isEmpty()){
-//            view.showEmailError(R.string.password_empty);
-//            return;
-//        }
-//
-//        boolean isLogin = service.login(email, password);
-//
-//        if (isLogin) {
-//            view.navigationToHome();
-//        } else  {
-//            view.loginFail();
-//        }
-//    }
     public void onCreateClicked(){
         view.intenttocreatest();
     }
-    //toi day
+    public void oUpdateClicked(int pos){
+        view.intenttoupdatest(pos);
+    }
     public void onDeleteClicked(String id){
-        boolean isdelete = service.delete(id);
+        service.delete(id);
         view.deleteclicked(id);
+    }
+    public ArrayList<Student> onGetList(){
+        return service.getlistst();
     }
 }
