@@ -9,5 +9,6 @@ public interface LoginView {
     String getPassword();
     void showEmailError(int resId);
     void navigationToHome();
+    void intenttosignup();
     void loginFail();
 }

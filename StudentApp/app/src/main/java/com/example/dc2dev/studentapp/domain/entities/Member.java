@@ -55,9 +55,16 @@ public class Member {
     }
     public static boolean isFullNameValid(String name) {
         if(name.toString().length()<6){
-            return true;
+            return false;
         }
         else
+            return true;
+    }
+    public static boolean isConfirmPassword(String password,String cfpassword) {
+        if(password.toString().equals(cfpassword.toString())){
             return false;
+        }
+        else
+            return true;
     }
 }

@@ -32,6 +32,10 @@ public class LoginPresenter {
             view.showEmailError(R.string.email_invalid);
             return;
         }
+        else if (password.isEmpty()){
+            view.showEmailError(R.string.password_empty);
+            return;
+        }
 
         boolean isLogin = service.login(email, password);
 
@@ -40,5 +44,8 @@ public class LoginPresenter {
         } else  {
             view.loginFail();
         }
+    }
+    public void onSignUpClicked(){
+        view.intenttosignup();
     }
 }

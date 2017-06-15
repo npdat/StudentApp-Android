@@ -38,9 +38,10 @@ public class TableStudent{
             return database.insert(TEN_BANG, null, contentValues);
         }
 
-        public long delete(String id) {
-            return database.delete(TEN_BANG, COT_MA + " = " + id, null);
-//        return database.delete(TEN_BANG, "id = ?", new String[] {ma});
+        public boolean delete(String id) {
+            database.delete(TEN_BANG, COT_MA + " = " + id, null);
+            return true;
+// return database.delete(TEN_BANG, "id = ?", new String[] {ma});
         }
 
         public long update(Student st) {

@@ -17,8 +17,11 @@ import android.widget.Toast;
 
 import com.example.dc2dev.studentapp.R;
 import com.example.dc2dev.studentapp.data.clients.database.TableStudent;
+import com.example.dc2dev.studentapp.data.clients.service.StudentDataService;
 import com.example.dc2dev.studentapp.domain.entities.Student;
 import com.example.dc2dev.studentapp.presentation.ui.adapters.StudentAdapter;
+import com.example.dc2dev.studentapp.presentation.ui.presenters.MainPresenter;
+import com.example.dc2dev.studentapp.presentation.ui.views.MainView;
 
 import java.util.ArrayList;
 
@@ -26,13 +29,14 @@ import java.util.ArrayList;
  * Created by dc2dev on 6/9/17.
  */
 
-public class Activitymain extends AppCompatActivity {
+public class Activitymain extends AppCompatActivity implements MainView{
     public final int KEYUPDATE=123;
     ListView listView;
     FloatingActionButton floatingActionButton;
     StudentAdapter studentAdapter;
     ArrayList<Student> students,studentssearch;
     TableStudent tableStudent;
+    MainPresenter presenter;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +50,7 @@ public class Activitymain extends AppCompatActivity {
         tableStudent=new TableStudent(Activitymain.this);
         students=new ArrayList<>();
         studentssearch=new ArrayList<>();
+        presenter=new MainPresenter(Activitymain.this,new StudentDataService(Activitymain.this));
         students=tableStudent.getListStudent();
         studentAdapter=new StudentAdapter(Activitymain.this,students);
         listView.setAdapter(studentAdapter);
@@ -54,8 +59,7 @@ public class Activitymain extends AppCompatActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(Activitymain.this,ActivityCreateStudent.class);
-                startActivity(intent);
+                presenter.onCreateClicked();
             }
         });
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -72,12 +76,8 @@ public class Activitymain extends AppCompatActivity {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                int idst=students.get(position).getId();
-                tableStudent.delete(idst+"");
-                students=tableStudent.getListStudent();
-                studentAdapter=new StudentAdapter(Activitymain.this,students);
-                listView.setAdapter(studentAdapter);
-                Toast.makeText(Activitymain.this,"Xoa thanh cong",Toast.LENGTH_SHORT).show();
+            String idst=students.get(position).getId()+"";
+            presenter.onDeleteClicked(idst);
                 return true;
             }
         });
@@ -111,16 +111,6 @@ public class Activitymain extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.d("m2", query);
-//                studentssearch=new ArrayList<Student>();
-//                for(Student st :students){
-//                    if(st.getFullname().contains(query)||st.getClassname().contains(query)){
-//                        studentssearch.add(st);
-//                        studentAdapter=new StudentAdapter(Activitymain.this,studentssearch);
-//                        listView.setAdapter(studentAdapter);
-//                    }
-//                }
-
                 return true;
             }
 
@@ -144,5 +134,32 @@ public class Activitymain extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void intenttocreatest() {
+        Intent intent=new Intent(Activitymain.this,ActivityCreateStudent.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void intenttoupdatest() {
+
+    }
+
+    @Override
+    public void deleteclicked(String id) {
+//        create
+//                update
+//        delete
+//                getlist
+//        search
+
+//con lam hien ra lai listview
+//        tableStudent.delete(id);
+//        students=tableStudent.getListStudent();
+        studentAdapter=new StudentAdapter(Activitymain.this,students);
+        listView.setAdapter(studentAdapter);
+        Toast.makeText(Activitymain.this,"Xoa thanh cong",Toast.LENGTH_SHORT).show();
     }
 }
