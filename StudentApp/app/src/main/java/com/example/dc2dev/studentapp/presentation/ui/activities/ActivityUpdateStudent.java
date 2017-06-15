@@ -1,17 +1,24 @@
 package com.example.dc2dev.studentapp.presentation.ui.activities;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.dc2dev.studentapp.R;
+import com.example.dc2dev.studentapp.data.clients.api.BitmapByte;
 import com.example.dc2dev.studentapp.data.clients.database.TableClass;
 import com.example.dc2dev.studentapp.data.clients.database.TableStudent;
 import com.example.dc2dev.studentapp.domain.entities.Class;
@@ -22,16 +29,18 @@ import java.util.List;
 
 public class ActivityUpdateStudent extends AppCompatActivity {
     EditText txtnameu;
-    Spinner spinclassu,spinimgu;
+    Spinner spinclassu;
     Button btnupdate;
     Intent intent;
-    String classchoose,imgchoose,classit,imgit;
-    int id,posclass,posimg;
+    ImageView imgchooseu;
+    String classchoose,picturePath,classit,imgit;
+    int id,posclass;
+    Uri uriu=null;
     List<String> classadap;
-    List<String> listimg;
     ArrayList<Class> classs;
     TableClass tableClass;
     TableStudent tableStudent;
+    private final int SELECT_PHOTO=1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,9 +51,8 @@ public class ActivityUpdateStudent extends AppCompatActivity {
     public void Init(){
         txtnameu= (EditText) findViewById(R.id.txtnameu);
         spinclassu= (Spinner) findViewById(R.id.spinclassu);
-        spinimgu= (Spinner) findViewById(R.id.spinimgu);
+        imgchooseu= (ImageView) findViewById(R.id.imgchooseu);
         btnupdate= (Button) findViewById(R.id.btnupdate);
-        listimg=new ArrayList<>();
         classadap=new ArrayList<>();
         intent=getIntent();
         id=intent.getIntExtra("id",0);
@@ -65,15 +73,14 @@ public class ActivityUpdateStudent extends AppCompatActivity {
                 spinclassu.setSelection(i);
             }
         }
-        listimg.add("Hinh 1");//http://i.imgur.com/DvpvklR.png
-        listimg.add("Hinh 2");
-        spinimgu.setAdapter(new ArrayAdapter<String>(ActivityUpdateStudent.this,R.layout.support_simple_spinner_dropdown_item,listimg));
-        for (int i=0;i<listimg.size();i++){
-            if (listimg.get(i).toString().equals(imgit.toString())){
-                posimg=i;
-                spinimgu.setSelection(i);
-            }
-        }
+//load img
+        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getContentResolver().query(Uri.parse(imgit),filePathColumn, null, null, null);
+        cursor.moveToFirst();
+        cursor.close();
+        Bitmap bmp= BitmapByte.uritoBM(Uri.parse(imgit),ActivityUpdateStudent.this);
+        imgchooseu.setImageBitmap(bmp);
+
 
     }
     public void Listener(){
@@ -98,37 +105,60 @@ public class ActivityUpdateStudent extends AppCompatActivity {
                 classchoose=classs.get(0).getName();
             }
         });
-        spinimgu.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                switch (position){
-                    case 0:
-                        imgchoose="http://i.imgur.com/DvpvklR.png";
-                        break;
-                    case 1:
-                        imgchoose="http://i157.photobucket.com/albums/t61/goodcow/avata.jpg";
-                        break;
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+       imgchooseu.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               Intent intent;
+               if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+                   intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                   intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                   intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+               }else{
+                   intent = new Intent(Intent.ACTION_GET_CONTENT);
+               }
+               intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+               intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+               intent.setType("image/*");
+               startActivityForResult(intent, SELECT_PHOTO);
+           }
+       });
         btnupdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!txtnameu.getText().toString().equals("")){
-                    Student student=new Student(id,txtnameu.getText().toString(),classchoose,imgchoose);
-                    tableStudent.update(student);
-                    Toast.makeText(ActivityUpdateStudent.this,"Cap nhat thanh cong ",Toast.LENGTH_SHORT).show();
-                    finish();
+                    if(uriu==null){
+                        Student student=new Student(id,txtnameu.getText().toString(),classchoose,imgit);
+                        tableStudent.update(student);
+                        Toast.makeText(ActivityUpdateStudent.this,"Cap nhat thanh cong ",Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                    else {
+                        Student student=new Student(id,txtnameu.getText().toString(),classchoose,uriu.toString());
+                        tableStudent.update(student);
+                        Toast.makeText(ActivityUpdateStudent.this,"Cap nhat thanh cong ",Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+
                 }
                 else {
                     Toast.makeText(ActivityUpdateStudent.this,"Ban cua nhap ten",Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==SELECT_PHOTO&&data!=null){
+            uriu=data.getData();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            Cursor cursor = getContentResolver().query(uriu,filePathColumn, null, null, null);
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            picturePath = cursor.getString(columnIndex);
+            cursor.close();
+            Bitmap bmp= BitmapByte.uritoBM(uriu,ActivityUpdateStudent.this);
+            imgchooseu.setImageBitmap(bmp);
+        }
     }
 }

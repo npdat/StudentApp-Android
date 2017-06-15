@@ -4,7 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -26,7 +31,7 @@ public class Activitymain extends AppCompatActivity {
     ListView listView;
     FloatingActionButton floatingActionButton;
     StudentAdapter studentAdapter;
-    ArrayList<Student> students;
+    ArrayList<Student> students,studentssearch;
     TableStudent tableStudent;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,6 +45,7 @@ public class Activitymain extends AppCompatActivity {
         floatingActionButton= (FloatingActionButton) findViewById(R.id.btnfloat);
         tableStudent=new TableStudent(Activitymain.this);
         students=new ArrayList<>();
+        studentssearch=new ArrayList<>();
         students=tableStudent.getListStudent();
         studentAdapter=new StudentAdapter(Activitymain.this,students);
         listView.setAdapter(studentAdapter);
@@ -93,5 +99,50 @@ public class Activitymain extends AppCompatActivity {
         studentAdapter=new StudentAdapter(Activitymain.this,students);
         listView.setAdapter(studentAdapter);
         super.onRestart();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search_liststudnet, menu);
+
+        MenuItem item = menu.findItem(R.id.search);
+
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.d("m2", query);
+//                studentssearch=new ArrayList<Student>();
+//                for(Student st :students){
+//                    if(st.getFullname().contains(query)||st.getClassname().contains(query)){
+//                        studentssearch.add(st);
+//                        studentAdapter=new StudentAdapter(Activitymain.this,studentssearch);
+//                        listView.setAdapter(studentAdapter);
+//                    }
+//                }
+
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d("m", newText);
+                studentssearch=new ArrayList<Student>();
+                for(Student st :students){
+                    if(st.getFullname().contains(newText)||st.getClassname().contains(newText)){
+                        studentssearch.add(st);
+                        studentAdapter=new StudentAdapter(Activitymain.this,studentssearch);
+                        listView.setAdapter(studentAdapter);
+                    }
+                }
+                return true;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
     }
 }
