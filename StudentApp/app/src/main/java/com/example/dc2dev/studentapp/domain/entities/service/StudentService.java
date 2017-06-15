@@ -5,4 +5,6 @@ package com.example.dc2dev.studentapp.domain.entities.service;
  */
 
 public interface StudentService {
+    boolean delete(String id);
+   // boolean signup(Member mb);
 }

@@ -1,6 +1,10 @@
 package com.example.dc2dev.studentapp.presentation.ui.adapters;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,8 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.dc2dev.studentapp.R;
+import com.example.dc2dev.studentapp.data.clients.api.BitmapByte;
 import com.example.dc2dev.studentapp.domain.entities.Student;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -20,8 +24,10 @@ import java.util.ArrayList;
 
 public class StudentAdapter extends ArrayAdapter<Student> {
 
+    Context context;
     public StudentAdapter(Context context, ArrayList<Student> users) {
         super(context, 0, users);
+        this.context=context;
     }
 
     @Override
@@ -37,11 +43,17 @@ public class StudentAdapter extends ArrayAdapter<Student> {
         TextView txtname = (TextView) convertView.findViewById(R.id.txtnamead);
         TextView txtnameclass = (TextView) convertView.findViewById(R.id.txtnameclassad);
 
-        Picasso.with(getContext()).load(st.getImage()).into(img);
+        if(st.getImage()!=null){
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            Cursor cursor = context.getContentResolver().query(Uri.parse(st.getImage()),filePathColumn, null, null, null);
+            cursor.moveToFirst();
+            cursor.close();
+            Bitmap bmp= BitmapByte.uritoBM(Uri.parse(st.getImage()),context);
+            img.setImageBitmap(bmp);
+        }
         txtname.setText(st.getFullname());
         txtnameclass.setText(st.getClassname());
-
-
+        //{byte[0]4898};
         return convertView;
     }
 }

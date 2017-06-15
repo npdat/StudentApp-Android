@@ -31,13 +31,14 @@ public class TableMember {
         database = new MySQLiteOpenHelper(context).getWritableDatabase();
     }
 
-    public long create(Member mb) {
+    public boolean create(Member mb) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(COT_TEN, mb.getFullname());
         contentValues.put(COT_EMAIL, mb.getEmail());
         contentValues.put(COT_PASSWORD, mb.getPassword());
         contentValues.put(COT_GIOITINH, mb.getGender());
-        return database.insert(TEN_BANG, null, contentValues);
+        database.insert(TEN_BANG, null, contentValues);
+        return true;
     }
 
     public long delete(String id) {

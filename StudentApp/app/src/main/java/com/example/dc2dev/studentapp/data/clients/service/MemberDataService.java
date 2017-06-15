@@ -3,6 +3,7 @@ package com.example.dc2dev.studentapp.data.clients.service;
 import android.content.Context;
 
 import com.example.dc2dev.studentapp.data.clients.database.TableMember;
+import com.example.dc2dev.studentapp.domain.entities.Member;
 import com.example.dc2dev.studentapp.domain.entities.service.MemberService;
 
 /**
@@ -20,5 +21,11 @@ public class MemberDataService implements MemberService {
     public boolean login(String email, String password) {
         boolean isLogin = tableMember.isExist(email, password);
         return isLogin;
+    }
+
+    @Override
+    public boolean signup(Member mb) {
+        boolean signupsuccess=tableMember.create(mb);
+        return signupsuccess;
     }
 }
