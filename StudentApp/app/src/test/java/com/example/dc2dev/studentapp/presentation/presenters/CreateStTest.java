@@ -1,12 +1,8 @@
 package com.example.dc2dev.studentapp.presentation.presenters;
 
-import android.database.sqlite.SQLiteDatabase;
-
 import com.example.dc2dev.studentapp.R;
-import com.example.dc2dev.studentapp.data.clients.api.MySQLiteOpenHelper;
 import com.example.dc2dev.studentapp.data.clients.service.ClassDataService;
 import com.example.dc2dev.studentapp.data.clients.service.StudentDataService;
-import com.example.dc2dev.studentapp.presentation.ui.activities.ActivityCreateStudent;
 import com.example.dc2dev.studentapp.presentation.ui.presenters.CreateStPresenter;
 import com.example.dc2dev.studentapp.presentation.ui.views.CreateStView;
 
@@ -14,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.verify;
@@ -29,17 +26,18 @@ public class CreateStTest {
     private CreateStView view;
     @Mock
     private CreateStPresenter presenter;
-    private ActivityCreateStudent activityCreateStudent;
-    private SQLiteDatabase database;
-
-
+    @Mock
+    private StudentDataService studentService;
+    @Mock
+    private ClassDataService classService;
 
     @Before
     public void setUp() throws Exception {
-        activityCreateStudent = new ActivityCreateStudent();
-        presenter = new CreateStPresenter(view, new StudentDataService(activityCreateStudent),new ClassDataService(activityCreateStudent));
-        database = new MySQLiteOpenHelper(activityCreateStudent).getWritableDatabase();
+        studentService = Mockito.mock(StudentDataService.class);
+        classService = Mockito.mock(ClassDataService.class);
+        presenter = new CreateStPresenter(view, studentService, classService);
     }
+
     @Test
     public void shouldShowErrorMessageWhenFullNameisValid() throws Exception {
         when(view.getFullName()).thenReturn("");

@@ -1,11 +1,7 @@
 package com.example.dc2dev.studentapp.presentation.presenters;
 
-import android.database.sqlite.SQLiteDatabase;
-
 import com.example.dc2dev.studentapp.R;
-import com.example.dc2dev.studentapp.data.clients.api.MySQLiteOpenHelper;
 import com.example.dc2dev.studentapp.data.clients.service.MemberDataService;
-import com.example.dc2dev.studentapp.presentation.ui.activities.ActivityLogin;
 import com.example.dc2dev.studentapp.presentation.ui.presenters.LoginPresenter;
 import com.example.dc2dev.studentapp.presentation.ui.views.LoginView;
 
@@ -13,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.verify;
@@ -29,19 +26,18 @@ public class LoginPresenterTest {
     private LoginView view;
     @Mock
     private LoginPresenter presenter;
-    private ActivityLogin activityLogin;
-    private SQLiteDatabase database;
+    @Mock
+    private MemberDataService dataservice;
+
     private String emailInValid = "npdat@tma";
     private String emailValid = "npdat@tma.com.vn";
     private String passoword = "123456";
 
     @Before
     public void setUp() throws Exception {
-        activityLogin = new ActivityLogin();
-        presenter = new LoginPresenter(view, new MemberDataService(activityLogin));
-        database = new MySQLiteOpenHelper(activityLogin).getWritableDatabase();
+        dataservice = Mockito.mock(MemberDataService.class);
+        presenter = new LoginPresenter(view, dataservice);
     }
-
 
     @Test
     public void shouldShowErrorMessageWhenEmailIsEmpty() throws Exception {
@@ -57,13 +53,21 @@ public class LoginPresenterTest {
         verify(view).showEmailError(R.string.email_invalid);
     }
 
-//    @Test
-//    public void shouldStartMainActivityWhenEmailAndPasswordAreCorrect() throws Exception {
-//        when(view.getEmail()).thenReturn(emailValid);
-//        when(view.getPassword()).thenReturn(passoword);
-//        presenter.onLoginClicked();
-//        verify(view).navigationToHome();
-//        boolean checklogin=service.login(emailInValid,passoword);
-//        Assert.assertEquals(false,checklogin);
-//    }
+    @Test
+    public void shouldStartMainActivityWhenEmailAndPasswordAreCorrect() throws Exception {
+        when(view.getEmail()).thenReturn(emailValid);
+        when(view.getPassword()).thenReturn(passoword);
+        when(dataservice.login(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        presenter.onLoginClicked();
+        verify(view).navigationToHome();
+    }
+
+    @Test
+    public void shouldShowErrorMessageWhenEmailAndPasswordAreNotCorrect() throws Exception {
+        when(view.getEmail()).thenReturn(emailValid);
+        when(view.getPassword()).thenReturn(passoword);
+        when(dataservice.login(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
+        presenter.onLoginClicked();
+        verify(view).loginFail();
+    }
 }
