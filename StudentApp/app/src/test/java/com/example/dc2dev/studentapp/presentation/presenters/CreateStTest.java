@@ -3,6 +3,7 @@ package com.example.dc2dev.studentapp.presentation.presenters;
 import com.example.dc2dev.studentapp.R;
 import com.example.dc2dev.studentapp.data.clients.service.ClassDataService;
 import com.example.dc2dev.studentapp.data.clients.service.StudentDataService;
+import com.example.dc2dev.studentapp.domain.entities.Student;
 import com.example.dc2dev.studentapp.presentation.ui.presenters.CreateStPresenter;
 import com.example.dc2dev.studentapp.presentation.ui.views.CreateStView;
 
@@ -30,18 +31,29 @@ public class CreateStTest {
     private StudentDataService studentService;
     @Mock
     private ClassDataService classService;
-
+    private String name = "minhhhhh";
+    private String clas = "m@gmail.com";
+    private String img = "123";
     @Before
     public void setUp() throws Exception {
         studentService = Mockito.mock(StudentDataService.class);
         classService = Mockito.mock(ClassDataService.class);
         presenter = new CreateStPresenter(view, studentService, classService);
     }
-
     @Test
     public void shouldShowErrorMessageWhenFullNameisValid() throws Exception {
         when(view.getFullName()).thenReturn("");
         presenter.isCreateClicked();
         verify(view).showError(R.string.fullname_empty);
     }
+    @Test
+    public void shouldShowErrorMessageWhenCreateSuccsess() throws Exception {
+        when(view.getFullName()).thenReturn(name);
+        when(view.getClas()).thenReturn(clas);
+        when(view.getImg()).thenReturn(img);
+        when(studentService.createst((Student) Mockito.anyObject())).thenReturn(true);
+        presenter.isCreateClicked();
+        verify(view).backhome();
+    }
+
 }

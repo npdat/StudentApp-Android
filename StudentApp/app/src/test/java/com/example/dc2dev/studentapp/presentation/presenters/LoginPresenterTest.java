@@ -61,7 +61,6 @@ public class LoginPresenterTest {
         presenter.onLoginClicked();
         verify(view).navigationToHome();
     }
-
     @Test
     public void shouldShowErrorMessageWhenEmailAndPasswordAreNotCorrect() throws Exception {
         when(view.getEmail()).thenReturn(emailValid);
