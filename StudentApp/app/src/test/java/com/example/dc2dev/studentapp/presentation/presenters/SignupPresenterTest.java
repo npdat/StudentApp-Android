@@ -1,11 +1,8 @@
 package com.example.dc2dev.studentapp.presentation.presenters;
 
-import android.database.sqlite.SQLiteDatabase;
-
 import com.example.dc2dev.studentapp.R;
-import com.example.dc2dev.studentapp.data.clients.api.MySQLiteOpenHelper;
 import com.example.dc2dev.studentapp.data.clients.service.MemberDataService;
-import com.example.dc2dev.studentapp.presentation.ui.activities.ActivitySignUp;
+import com.example.dc2dev.studentapp.domain.entities.Member;
 import com.example.dc2dev.studentapp.presentation.ui.presenters.SignupPresenter;
 import com.example.dc2dev.studentapp.presentation.ui.views.SignupView;
 
@@ -13,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.verify;
@@ -27,20 +25,19 @@ public class SignupPresenterTest {
     private SignupView view;
     @Mock
     private SignupPresenter presenter;
-    private ActivitySignUp activitySignUp;
-    private SQLiteDatabase database;
+    @Mock
+    private MemberDataService dataservice;
 
-    private String emailInValid = "m";
-    private String emailValid = "npdat@tma.com.vn";
+    private String fullname = "mmmmmmmm";
+    private String email = "m@gmail.com";
     private String passoword = "123456";
+    private String cfpassoword = "123456";
+    private int gender = 1;
 
     @Before
     public void setUp() throws Exception {
-        activitySignUp = new ActivitySignUp();
-        presenter = new SignupPresenter(view, new MemberDataService(activitySignUp));
-        database = new MySQLiteOpenHelper(activitySignUp).getWritableDatabase();
-        //LoginPresenter loginPresenter = Mockito.mock(LoginPresenter.class);
-        //Mockito.when(loginPresenter.onLoginClicked()).thenReturn(true);
+        dataservice = Mockito.mock(MemberDataService.class);
+        presenter = new SignupPresenter(view, dataservice);
     }
 
     @Test
@@ -52,7 +49,7 @@ public class SignupPresenterTest {
     @Test
     public void shouldShowErrorMessageWhenEmailIsInvalid() throws Exception {
         when(view.getFullName()).thenReturn("mmmmmm");
-        when(view.getEmail()).thenReturn(emailInValid);
+        when(view.getEmail()).thenReturn(email);
         presenter.onSignUpClicked();
         verify(view).showError(R.string.email_invalid);
     }
@@ -85,9 +82,16 @@ public class SignupPresenterTest {
         verify(view).showError(R.string.cfpassword_invalid);
     }
 
-//    @Test
-//    public void shouldStartMainActivityWhenSignUpSuccess() throws Exception {
-//        presenter.onSignUpClicked();
-//        verify(view).showError();
-//    }
+    @Test
+    public void shouldStartMainActivityWhenSignUpSuccess() throws Exception {
+        when(view.getFullName()).thenReturn(fullname);
+        when(view.getEmail()).thenReturn(email);
+        when(view.getPassword()).thenReturn(passoword);
+        when(view.getCfPassword()).thenReturn(cfpassoword);
+        when(view.getCbgender()).thenReturn(gender);
+        when(dataservice.signup((Member) Mockito.anyObject())).thenReturn(true);
+        presenter.onSignUpClicked();
+        verify(view).navigationTolistst();
+    }
+
 }

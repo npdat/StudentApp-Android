@@ -1,10 +1,6 @@
 package com.example.dc2dev.studentapp.presentation.presenters;
 
-import android.database.sqlite.SQLiteDatabase;
-
-import com.example.dc2dev.studentapp.data.clients.api.MySQLiteOpenHelper;
-import com.example.dc2dev.studentapp.data.clients.service.StudentDataService;
-import com.example.dc2dev.studentapp.presentation.ui.activities.Activitymain;
+import com.example.dc2dev.studentapp.domain.entities.service.StudentService;
 import com.example.dc2dev.studentapp.presentation.ui.presenters.MainPresenter;
 import com.example.dc2dev.studentapp.presentation.ui.views.MainView;
 
@@ -12,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.verify;
@@ -26,14 +23,12 @@ public class MainPresenterTest {
     private MainView view;
     @Mock
     private MainPresenter presenter;
-    private Activitymain activitymain;
-    private SQLiteDatabase database;
+    private StudentService dataservice;
 
     @Before
     public void setUp() throws Exception {
-        activitymain = new Activitymain();
-        presenter = new MainPresenter(view, new StudentDataService(activitymain));
-        database = new MySQLiteOpenHelper(activitymain).getWritableDatabase();
+        presenter = new MainPresenter(view, dataservice);
+        dataservice = Mockito.mock(StudentService.class);
     }
     @Test
     public void CheckIntenttoCreate(){
@@ -42,22 +37,7 @@ public class MainPresenterTest {
     }
     @Test
     public void CheckIntenttoUpdate(){
-        int pos=0;
-        presenter.oUpdateClicked(pos);
-        verify(view).intenttoupdatest(pos);
+        presenter.oUpdateClicked(Mockito.anyInt());
+        verify(view).intenttoupdatest(Mockito.anyInt());
     }
-//    @Test
-//    public void CheckGetList(){
-//        boolean check=false;
-//        ArrayList<Student> students=presenter.onGetList();
-//            if(students.size()>0){
-//                check=false;
-//            }
-//            else
-//                check=true;
-//        Assert.assertEquals(check,false);
-//    }
-
-
-    //
 }

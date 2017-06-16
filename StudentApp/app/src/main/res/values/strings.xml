@@ -9,4 +9,5 @@
     <string name="fullname_empty">Ten khong duoc trong</string>
     <string name="cfpassword_empty">Password xac nhan khong duoc trong</string>
     <string name="cfpassword_invalid">Password xac nhan khong dung</string>
+    <string name="signup_invalid">Đăng ký thất bại</string>
 </resources>
