@@ -40,6 +40,15 @@ public class TableMember {
         database.insert(TEN_BANG, null, contentValues);
         return true;
     }
+    public int creatertid(Member mb) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COT_TEN, mb.getFullname());
+        contentValues.put(COT_EMAIL, mb.getEmail());
+        contentValues.put(COT_PASSWORD, mb.getPassword());
+        contentValues.put(COT_GIOITINH, mb.getGender());
+        database.insert(TEN_BANG, null, contentValues);
+        return mb.getId();
+    }
 
     public long delete(String id) {
         return database.delete(TEN_BANG, COT_MA + " = " + id, null);

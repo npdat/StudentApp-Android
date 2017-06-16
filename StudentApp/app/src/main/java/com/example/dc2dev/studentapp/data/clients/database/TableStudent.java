@@ -38,6 +38,14 @@ public class TableStudent{
             database.insert(TEN_BANG, null, contentValues);
             return true;
         }
+    public int creatertid(Student st) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COT_TEN, st.getFullname());
+        contentValues.put(COT_LOP, st.getClassname());
+        contentValues.put(COT_HINH, st.getImage());
+        database.insert(TEN_BANG, null, contentValues);
+        return st.getId();
+    }
 
         public boolean delete(String id) {
             database.delete(TEN_BANG, COT_MA + " = " + id, null);
@@ -51,6 +59,14 @@ public class TableStudent{
             contentValues.put(COT_HINH, st.getImage());
             database.update(TEN_BANG, contentValues, COT_MA + " = " + st.getId(), null);
             return true;
+        }
+        public int updatertid(Student st) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(COT_TEN, st.getFullname());
+            contentValues.put(COT_LOP, st.getClassname());
+            contentValues.put(COT_HINH, st.getImage());
+            database.update(TEN_BANG, contentValues, COT_MA + " = " + st.getId(), null);
+            return st.getId();
         }
 
         public ArrayList<Student> getListStudent() {

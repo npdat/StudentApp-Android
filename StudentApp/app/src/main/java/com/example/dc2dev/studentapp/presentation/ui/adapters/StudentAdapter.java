@@ -46,8 +46,10 @@ public class StudentAdapter extends ArrayAdapter<Student> {
         if(st.getImage()!=null){
             String[] filePathColumn = { MediaStore.Images.Media.DATA };
             Cursor cursor = context.getContentResolver().query(Uri.parse(st.getImage()),filePathColumn, null, null, null);
-            cursor.moveToFirst();
-            cursor.close();
+            if(cursor!=null){
+                cursor.moveToFirst();
+                cursor.close();
+            }
             Bitmap bmp= BitmapByte.uritoBM(Uri.parse(st.getImage()),context);
             img.setImageBitmap(bmp);
         }
