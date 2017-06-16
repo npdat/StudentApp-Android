@@ -57,7 +57,6 @@ public class TableStudent{
             ArrayList<Student> students = new ArrayList<>();
             Cursor cursor = database.query(TEN_BANG, null, null, null, null, null, null);
             if (cursor != null) {
-                String st = "";
                 while (cursor.moveToNext()) {
                     students.add(new Student(cursor.getInt(cursor.getColumnIndex(COT_MA)),
                             cursor.getString(cursor.getColumnIndex(COT_TEN)),
